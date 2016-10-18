@@ -12,7 +12,7 @@
     "url": "https://github.com/ash-framework/middleware/issues"
   },
   "homepage": "https://github.com/ash-framework/middleware",
-  "author": "Richard Walker <digitalsadhu@gmail.com> (http://ash-framework.com)",
+  "author": "Richard Walker <digitalsadhu@gmail.com> (http://lovebeer.nz/)",
   "engines": {
     "node": ">=6.7.0"
   },
@@ -54,7 +54,9 @@
   "maintainers": [
     "Richard Walker digitalsadhu@gmail.com"
   ],
-  "contributors": [],
+  "contributors": [
+    "Richard Walker <digitalsadhu@gmail.com> (http://lovebeer.nz/)"
+  ],
   "badges": {
     "list": [
       [
