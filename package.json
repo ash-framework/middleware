@@ -39,8 +39,13 @@
     "ash",
     "framework"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "@ash-framework/http-context": "^1.0.0",
+    "supertest": "^2.0.1",
+    "supertest-as-promised": "^4.0.0"
+  },
   "devDependencies": {
+    "body-parser": "^1.15.2",
     "chai": "^3.5.0",
     "github": "^5.2.2",
     "mocha": "^3.1.2",
