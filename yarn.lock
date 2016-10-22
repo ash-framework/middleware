@@ -4,6 +4,12 @@
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@ash-framework/argument-error/-/argument-error-1.0.3.tgz#f4e418892c2707f6945e8007fe9107ad28d155b1"
 
+"@ash-framework/file-not-found-error":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@ash-framework/file-not-found-error/-/file-not-found-error-1.0.0.tgz#4fee32050c3f84ffea72e7e7866309ee0127542f"
+  dependencies:
+    "@ash-framework/argument-error" "^1.0.3"
+
 "@ash-framework/http-context":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@ash-framework/http-context/-/http-context-1.0.0.tgz#47500c88a2dbc67a3b9150eab02161f71e2c1c52"

@@ -3,15 +3,7 @@
 const HttpContext = require('@ash-framework/http-context')
 const ArgumentError = require('@ash-framework/argument-error')
 const path = require('path')
-
-class FileNotFoundError extends Error {
-  constructor (name, path) {
-    const message = `Unable to find file ${name} in ${path}`
-    super(message)
-
-    this.name = this.constructor.name
-  }
-}
+const FileNotFoundError = require('@ash-framework/file-not-found-error')
 
 function validateInput (name, options) {
   if (!name) {
@@ -40,18 +32,18 @@ module.exports = function (defnFunc, app, middlewareDir) {
         } else {
           let MW, mw, middlewarePath
           try {
-            middlewarePath = path.join(middlewareDir, relativePath)
-            MW = require(middlewarePath + name)
+            middlewarePath = path.join(middlewareDir, relativePath, name)
+            MW = require(middlewarePath)
           } catch (e) {
             throw new FileNotFoundError(`${name}.js`, middlewarePath)
           }
           try {
             mw = new MW()
           } catch (e) {
-            throw new Error(`Invalid middleware class definition in ${middlewarePath + name}.js`)
+            throw new Error(`Invalid middleware class definition in ${path.join(middlewarePath, name)}.js`)
           }
           if (!mw.register) {
-            throw new Error(`Invalid middleware class definition, expected method 'register' but was not found in ${middlewarePath + name}.js`)
+            throw new Error(`Invalid middleware class definition, expected method 'register' but was not found in ${path.join(middlewarePath, name)}.js`)
           }
           app.use(function (req, res, next) {
             Promise.resolve()
