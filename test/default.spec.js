@@ -88,6 +88,44 @@ describe('middleware', function () {
       })
   })
 
+  it('complex route structure', function () {
+    const app = express()
+    const defn = function () {
+      this.middleware('group1', function () {
+        this.middleware('one')
+      })
+      this.middleware('group2', function () {
+        this.middleware('one')
+        this.middleware('custom-middlewares', function () {
+          this.middleware(function (req, res, next) {
+            req.test.custom1 = true
+            next()
+          })
+          this.middleware(function (req, res, next) {
+            req.test.custom2 = true
+            next()
+          })
+        })
+        this.middleware('three')
+      })
+    }
+
+    middleware(defn, app, path.join(__dirname, 'middleware'))
+
+    app.get('/', function (req, res) {
+      res.send(req.test)
+    })
+
+    return request(app).get('/')
+      .expect(200)
+      .then(res => {
+        assert.strictEqual(res.body.one, 'group2one')
+        assert.strictEqual(res.body.custom1, true)
+        assert.strictEqual(res.body.custom2, true)
+        assert.strictEqual(res.body.three, 'group2three')
+      })
+  })
+
   it('missing name argument', function () {
     const app = express()
     const defn = function () {
