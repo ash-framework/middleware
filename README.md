@@ -67,7 +67,7 @@ an express middleware function can be passed to bypass middleware loading and be
 See [Inlining middleware](#inlining-middleware))
 The second optional parameter is either an options object to be passed to the middleware
 to be loaded (See [Loading middleware](#loading-middleware))
-or a callback function to be used for grouping middleware. (See [Loading middleware](#grouping-middleware))
+or a callback function to be used for grouping middleware. (See [Grouping middleware](#grouping-middleware))
 
 #### Grouping middleware
 
@@ -161,11 +161,11 @@ module.exports = class Middleware {
 #### httpContext
 
 `httpContext` is a wrapper for express request and response objects.
-It is an object with 4 properties as follows.
-- request - express request object
-- response - express response object
-- get - property getting
-- set - property setter
+It is an object with 4 properties/methods as follows.
+- `request` - express request object
+- `response` - express response object
+- `get(key)` - property getting
+- `set(key, value)` - property setter
 
 If you `set` something on httpContext in one middleware class, it will be available
 via `get` in later middleware classes.
