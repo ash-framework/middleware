@@ -1,7 +1,7 @@
 {
   "name": "@ash-framework/middleware",
   "description": "Middleware support for ash framework",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
   "main": "./src/index.js",
   "repository": {
