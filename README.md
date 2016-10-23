@@ -39,7 +39,180 @@ Middleware support for ash framework
 
 
 ## Usage
-Usage instructions go here
+
+Loads middleware from a specified directory or from inline express style middleware functions.
+
+### Defining middleware routing
+
+#### Basic routing
+
+Define a nested function to specify which middleware to load and in what order.
+```js
+const middleware = function () {
+  this.middleware('token')
+  this.middleware('user')
+}
+```
+
+In the example above, token middleware will be loaded before user middleware.
+
+#### this.middleware
+
+```js
+this.middleware(name|express middleware, [options|callback])
+```
+
+The `this.middleware` function takes the name of the middleware as the first parameter (or alternatively
+an express middleware function can be passed to bypass middleware loading and be used instead
+See [Inlining middleware](#inlining-middleware))
+The second optional parameter is either an options object to be passed to the middleware
+to be loaded (See [Loading middleware](#loading-middleware))
+or a callback function to be used for grouping middleware. (See [Loading middleware](#grouping-middleware))
+
+#### Grouping middleware
+
+Middleware can be grouped using nesting. This has no application other than to help you to
+group your middleware in a way that makes sense for your application.
+
+```js
+const middleware = function () {
+  this.middleware('security', function () {
+    this.middleware('token')
+    this.middleware('csrf')
+  })
+  this.middleware('user')
+}
+```
+
+In the above example, `token` middleware will run followed by `csrf` and then finally `user`. No middleware is
+run for `security` itself as this is just a namespace.
+
+#### Inlining middleware
+
+The `this.middleware` function can also take an express style middleware callback of the form `function (req, res, next) {}`
+The main intended use for this is so that you can load external middleware.
+
+```js
+const helmet = require('helmet')
+
+const middleware = function () {
+  this.middleware(helmet())
+}
+```
+
+or simply
+
+```js
+const middleware = function () {
+  this.middleware(function (req, res, next) {
+    // do something
+    next()
+  })
+}
+```
+
+### Loading middleware
+
+Loading middleware involves passing a definition function (See [defining middleware routing](#defining-middleware-routing)),
+an express `app` instance and a path to a directory of route files to load from.
+
+```js
+const express = require('express')
+const load = require('@ash-framework/middleware')
+const path = require('path')
+
+const middlewareDefinition = function () {
+  this.middleware('token')
+}
+const expressApp = express()
+const middlewareDirectory = path.join(__dirname, 'middleware')
+
+load(middlewareDefinition, expressApp, middlewareDirectory)
+```
+
+### Defining middleware
+
+When `this.middleware(name)` is called, the module will attempt to look up a file named `name` in the directory defined
+in `middlewareDirectory` (See [Loading Middleware](loading-middleware)).
+
+```js
+const app = express()
+
+load(function () {
+  this.middleware('user')
+}, app, __dirname + '/middleware')
+```
+
+In the example above, a file name `user.js` will be looked for and loaded if it exists. (A descriptive error will thrown if it
+does not).
+
+Loaded files should export a class with a method `register`
+
+```js
+// user.js
+module.exports = class Middleware {
+  register (httpContext, options) {
+    // return a promise if you want subsequent middleware to wait
+    return Promise.resolve()
+  }
+}
+```
+
+#### httpContext
+
+`httpContext` is a wrapper for express request and response objects.
+It is an object with 4 properties as follows.
+- request - express request object
+- response - express response object
+- get - property getting
+- set - property setter
+
+If you `set` something on httpContext in one middleware class, it will be available
+via `get` in later middleware classes.
+
+```js
+const app = express()
+
+const definition = function () {
+  this.middleware('token')
+  this.middleware('user')
+}
+load(definition, app, __dirname + '/middleware')
+
+// token.js
+module.exports = class Middleware {
+  register (httpContext, options) {
+    httpContext.set('token', 'ABC1234')
+  }
+}
+
+// user.js
+module.exports = class Middleware {
+  register (httpContext, options) {
+    const token = httpContext.get('token') // ABC1234
+  }
+}
+```
+
+#### options
+
+`options` is an object passed through from the middleware definition
+
+```js
+const app = express()
+
+const definition = function () {
+  this.middleware('token', {type: 'csrf'})
+}
+load(definition, app, __dirname + '/middleware')
+
+// token.js
+module.exports = class Middleware {
+  register (httpContext, options) {
+    console.log(options.type) // csrf
+  }
+}
+```
 
 <!-- HISTORY/ -->
 
